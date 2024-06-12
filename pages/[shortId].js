@@ -1,44 +1,31 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import clientPromise from "../lib/mongodb";
 
 const RedirectPage = ({ url }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (url) {
-      router.push(url);
-    }
+    setTimeout(() => {
+      router.push(`/page1?url=${encodeURIComponent(url)}`);
+    }, 3000); // Delay for 3 seconds
   }, [url]);
 
   return (
-    <div>
-      <h1>Redirecting...</h1>
+    <div className="min-h-screen flex items-center justify-center">
+      <h1 className="text-2xl font-bold">Redirecting...</h1>
     </div>
   );
 };
 
 export async function getServerSideProps(context) {
   const { shortId } = context.params;
+  const client = await clientPromise;
+  const db = client.db("url-shortener");
 
-  // Ignore requests for favicon.ico
-  if (shortId === "favicon.ico") {
-    return {
-      notFound: true,
-    };
-  }
+  const data = await db.collection("urls").findOne({ shortId });
 
-  let url;
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/redirect?shortId=${shortId}`
-    );
-    const data = await res.json();
-    url = data.url;
-  } catch (error) {
-    console.error("Error fetching redirect URL:", error);
-  }
-
-  if (!url) {
+  if (!data) {
     return {
       notFound: true,
     };
@@ -46,7 +33,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      url,
+      url: data.url,
     },
   };
 }
