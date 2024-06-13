@@ -6,7 +6,7 @@ export default function Page() {
   // Rename the function to avoid conflict
   return (
     <>
-      <App />
+      <HomePage />
     </>
   );
 }
