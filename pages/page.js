@@ -1,11 +1,12 @@
+// pages/page.js
 import App from "next/app";
-import Home from "./index";
+import HomePage from "./index"; // Rename the import to avoid conflict
 
-export default function Home() {
+export default function Page() {
+  // Rename the function to avoid conflict
   return (
     <>
       <App />
-      <Home />
     </>
   );
 }
